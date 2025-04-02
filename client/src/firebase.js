@@ -1,4 +1,5 @@
-import * as firebase from 'firebase';
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider ,sendSignInLinkToEmail } from 'firebase/auth';
 
 
 const firebaseConfig = {
@@ -15,6 +16,8 @@ const firebaseConfig = {
 
   // export
 
-  export const auth = firebase.auth()
+   const auth = getAuth(app);
 
-  export const googleAuthProvider = new firebase.auth.googleAuthProvider();
+   const googleAuthProvider = new GoogleAuthProvider();
+
+   export {auth , googleAuthProvider ,sendSignInLinkToEmail}
