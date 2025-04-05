@@ -15,6 +15,7 @@ const userSlice = createSlice({
         loggedInUser : (state , action) => {
             state.email = action.payload.email;
             state.token = action.payload.token;
+            //console.table(state.email , state.token );
         },
         logout : (state) => {
             state.email = null;

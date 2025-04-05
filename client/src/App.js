@@ -19,6 +19,7 @@ import { useDispatch } from 'react-redux';
 import { auth } from "./firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
 import { loggedInUser } from "./features/user/userSlice.js";
+import ForgotPassword from "./pages/auth/ForgotPassword.js";
 
 
 
@@ -50,6 +51,8 @@ function App() {
       <Route exact path="/login" element={<Login />} />
       <Route exact path="/register" element={<Register />} />
       <Route exact path="/register/complete" element={<RegisterComplete />} />
+      <Route exact path="/forgot/password" element={<ForgotPassword />} />
+
     </Routes>
     </>
   );
