@@ -1,12 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { auth, googleAuthProvider, sendSignInLinkToEmail } from '../../firebase.js'
-import { Button, ConfigProvider, Space } from 'antd';
 import { toast } from 'react-toastify'
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
 import { loggedInUser } from '../../features/user/userSlice.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate  , Link} from 'react-router-dom';
 
+
+import {
+  GoogleOutlined , 
+  MailOutlined,
+} from "@ant-design/icons";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -16,6 +20,18 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user)
+
+useEffect(() => {
+
+        if(user && user.token){
+            navigate("/");
+        }
+
+        },[user.token])
+
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     //console.table(email, password);
@@ -41,6 +57,27 @@ const Login = () => {
     }
 
   };
+  const googleLogin = async () => {
+    signInWithPopup(auth , googleAuthProvider).then(
+      async (result) => {
+        const {user} = result
+        const idTokenResult = await user.getIdTokenResult();
+
+      dispatch(loggedInUser({
+        email: user.email,
+        token: idTokenResult.token,
+      }));
+      navigate("/");
+      toast.success("Logged in Successfully");
+      }
+    ).catch( (error) => {
+      console.log(error);
+      toast.error(error.message);
+      setLoading(false);
+    } )
+  }
+
+
   const loginForm = () => {
     return (
       <form onSubmit={handleSubmit}>
@@ -65,22 +102,35 @@ const Login = () => {
         <br />
         <button
           type="submit"
-          className="btn btn-primary btn-lg w-30 shadow-lg rounded-pill px-4 py-2"
+          className="btn btn-primary btn-lg w-100 shadow-lg rounded-pill px-4 py-2"
           onClick={handleSubmit}
           disabled={!email || password.length < 6}
-        >Login</button>
+        >{<MailOutlined/>} &nbsp; Email Login</button>
       </form>
     )
   }
   return (
-    <div className='container p-5'>
+    <div className='container p-5 '>
       <div className='row'>
         <div className="col-md-6 offset-md-3">
-          <h4>
-            Login
-          </h4>
+          {!loading ?
+           <h4>Login</h4> :
+            <h4 className='text-danger'>Loading....</h4>}
           <br />
           {loginForm()}
+
+          <button
+          type="submit"
+          className="btn btn-danger btn-lg w-100 shadow-lg rounded-pill px-4 py-2 my-4"
+          onClick={googleLogin}
+        ><GoogleOutlined/>
+        &nbsp;
+         Google Login
+          </button>
+        
+        <Link to="/forgot/password" className='float-right text-danger'>
+        Forgot Password
+        </Link>
         </div>
       </div>
 
