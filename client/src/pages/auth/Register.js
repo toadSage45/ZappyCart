@@ -30,11 +30,12 @@ const Register = () => {
         className='form-control' 
         value={email} 
         onChange={e => setEmail(e.target.value)}
+        placeholder='Your email'
         autoFocus />
 
-
-        <button type ="submit" className='btn btn-raised'>Register  </button>
-      </form>
+        <br/>
+        <button type="submit" class="btn btn-primary btn-lg w-30 shadow-lg rounded-pill px-4 py-2">Register</button>
+        </form>
     )
   }
   return (
@@ -44,6 +45,7 @@ const Register = () => {
           <h4>
             Register
           </h4>
+          <br/>
           {registerForm()}
         </div>
       </div>

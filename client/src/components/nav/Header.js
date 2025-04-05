@@ -1,43 +1,81 @@
 import React, { useState } from "react";
+import { useDispatch } from 'react-redux';
 import { Menu } from "antd";
 import {
   HomeOutlined,
   LoginOutlined,
   UserAddOutlined,
-  UserOutlined
-
+  UserOutlined,
+  LogoutOutlined
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
-
-const { SubMenu, Item } = Menu;
+import { Link, useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase";
+import { logout } from "../../features/user/userSlice";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
 
   const handleClick = (e) => {
-    // console.log(e.key);
     setCurrent(e.key);
   };
 
+  const logoutUser = () => {
+    signOut(auth);
+    dispatch(logout());
+    navigate("/login");
+  };
+
+  const items = [
+    {
+      label: <Link to="/">Home</Link>,
+      key: "home",
+      icon: <HomeOutlined />,
+    },
+    {
+      label: <Link to="/register">Register</Link>,
+      key: "register",
+      icon: <UserAddOutlined />,
+      className: "float-right"
+    },
+    {
+      label: <Link to="/login">Login</Link>,
+      key: "login",
+      icon: <LoginOutlined />,
+      className: "float-right"
+    },
+    {
+      label: "Username",
+      key: "SubMenu",
+      icon: <UserOutlined />,
+      children: [
+        {
+          label: "Option 1",
+          key: "setting:1",
+        },
+        {
+          label: "Option 2",
+          key: "setting:2",
+        },
+        {
+          label: "Logout",
+          key: "logout",
+          icon: <LogoutOutlined />,
+          onClick: logoutUser,
+        },
+      ],
+    },
+  ];
+
   return (
-    <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
-      <Item key="home" icon={<HomeOutlined />}>
-        <Link to="/">Home</Link>
-      </Item>
-
-      <Item key="register" icon={<UserAddOutlined />} className="float-right">
-        <Link to="/register">Register</Link>
-      </Item>
-
-      <Item key="login" icon={<LoginOutlined />} className="float-right">
-        <Link to="/login">Login</Link>
-      </Item>
-
-      <SubMenu icon={<  UserOutlined />} title="Username">
-        <Item key="setting:1">Option 1</Item>
-        <Item key="setting:2">Option 2</Item>
-      </SubMenu>
-    </Menu>
+    <Menu
+      onClick={handleClick}
+      selectedKeys={[current]}
+      mode="horizontal"
+      items={items}
+    />
   );
 };
 
