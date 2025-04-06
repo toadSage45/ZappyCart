@@ -5,12 +5,23 @@ import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { loggedInUser } from '../../features/user/userSlice.js';
 import { useNavigate  , Link} from 'react-router-dom';
+import axios from 'axios'
 
 
 import {
   GoogleOutlined , 
   MailOutlined,
 } from "@ant-design/icons";
+
+const createOrUpdateUser =  async (authtoken) => {
+  console.log(`${process.env.REACT_APP_API}/create-or-update-user`);
+  return axios.post(`${process.env.REACT_APP_API}/create-or-update-user` , {} , {
+    headers : {
+      authtoken, 
+    }
+  })
+}
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -42,13 +53,20 @@ useEffect(() => {
 
       const { user } = result;
       const idTokenResult = await user.getIdTokenResult();
+      
+      // Post request made to "/api"
 
-      dispatch(loggedInUser({
-        email: user.email,
-        token: idTokenResult.token,
-      }));
-      navigate("/");
-      toast.success("Logged in Successfully");
+      createOrUpdateUser(idTokenResult.token)
+      .then((res) => console.log("Create or update user",res))
+      .catch()
+
+
+      // dispatch(loggedInUser({
+      //   email: user.email,
+      //   token: idTokenResult.token,
+      // }));
+      // navigate("/");
+      // toast.success("Logged in Successfully");
 
     } catch (error) {
       console.log(error);
