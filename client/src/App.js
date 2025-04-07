@@ -20,6 +20,7 @@ import { auth } from "./firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
 import { loggedInUser } from "./features/user/userSlice.js";
 import ForgotPassword from "./pages/auth/ForgotPassword.js";
+import { currentUser } from "./functions/auth.js";
 
 
 
@@ -33,10 +34,18 @@ function App() {
     const unsubscirbe = onAuthStateChanged(auth , async (user) => {
       if(user) {
         const idTokenResult = await user.getIdTokenResult();
-        dispatch(loggedInUser({
-          email : user.email ,
-          token : idTokenResult.token,
-        }));
+        currentUser(idTokenResult.token)
+              .then((res) => {
+                console.log(res.data);
+                dispatch(loggedInUser({
+                  name : res.data.name,
+                  email: res.data.email,
+                  token: idTokenResult.token,
+                  role : res.data.role , 
+                  _id : res.data._id,
+                }));
+              })
+              .catch(err => console.log(err));
       }
     })
     return () => unsubscirbe();

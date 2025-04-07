@@ -12,15 +12,9 @@ import {
   GoogleOutlined , 
   MailOutlined,
 } from "@ant-design/icons";
+import { createOrUpdateUser } from '../../functions/auth.js';
 
-const createOrUpdateUser =  async (authtoken) => {
-  console.log(`${process.env.REACT_APP_API}/create-or-update-user`);
-  return axios.post(`${process.env.REACT_APP_API}/create-or-update-user` , {} , {
-    headers : {
-      authtoken, 
-    }
-  })
-}
+
 
 
 const Login = () => {
@@ -57,16 +51,20 @@ useEffect(() => {
       // Post request made to "/api"
 
       createOrUpdateUser(idTokenResult.token)
-      .then((res) => console.log("Create or update user",res))
-      .catch()
+      .then((res) => {
+        console.log(res.data);
+        dispatch(loggedInUser({
+          name : res.data.name,
+          email: res.data.email,
+          token: idTokenResult.token,
+          role : res.data.role , 
+          _id : res.data._id,
+        }));
+      })
+      .catch(err => console.log(err))
 
-
-      // dispatch(loggedInUser({
-      //   email: user.email,
-      //   token: idTokenResult.token,
-      // }));
-      // navigate("/");
-      // toast.success("Logged in Successfully");
+      navigate("/");
+      toast.success("Logged in Successfully");
 
     } catch (error) {
       console.log(error);
@@ -81,11 +79,19 @@ useEffect(() => {
         const {user} = result
         const idTokenResult = await user.getIdTokenResult();
 
-      dispatch(loggedInUser({
-        email: user.email,
-        token: idTokenResult.token,
-      }));
-      navigate("/");
+        createOrUpdateUser(idTokenResult.token)
+        .then((res) => {
+          console.log(res.data);
+          dispatch(loggedInUser({
+            name : res.data.name,
+            email: res.data.email,
+            token: idTokenResult.token,
+            role : res.data.role , 
+            _id : res.data._id,
+          }));
+        })
+        .catch(err => console.log(err))
+        navigate("/");
       toast.success("Logged in Successfully");
       }
     ).catch( (error) => {
