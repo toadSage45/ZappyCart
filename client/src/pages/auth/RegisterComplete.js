@@ -3,6 +3,13 @@ import {auth , googleAuthProvider,sendSignInLinkToEmail} from '../../firebase.js
 import { useNavigate } from 'react-router-dom';
 import {toast } from 'react-toastify'
 import { signInWithEmailLink, updatePassword } from 'firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { loggedInUser } from '../../features/user/userSlice.js';
+import { createOrUpdateUser } from '../../functions/auth.js';
+
+
+
 
 
 const RegisterComplete = () => {
@@ -12,6 +19,8 @@ const RegisterComplete = () => {
   
   const [password  , setPassword] = useState('');
 
+  const user = useSelector((state) => state.user)
+  const dispatch = useDispatch();
   useEffect( () => {
     setEmail(window.localStorage.getItem('emailForRegistration'))
   } , [])
@@ -48,6 +57,21 @@ const RegisterComplete = () => {
 
             //redux store
             console.log('user' , user ,"idTokenResult" , idTokenResult);
+            
+            createOrUpdateUser(idTokenResult.token)
+                  .then((res) => {
+                    console.log(res.data);
+                    dispatch(loggedInUser({
+                      name : res.data.name,
+                      email: res.data.email,
+                      token: idTokenResult.token,
+                      role : res.data.role , 
+                      _id : res.data._id,
+                    }));
+                  })
+                  .catch(err => console.log(err))
+            
+
 
             //redirect
             //history.push('/')
@@ -81,7 +105,7 @@ const RegisterComplete = () => {
         />
 
         <br/>
-        <button type ="submit" className='btn btn-raised'> Complete Registration  </button>
+        <button type="submit" className="btn btn-primary btn-lg w-30 shadow-lg rounded-pill px-4 py-2">Complete Registration</button>
       </form>
     )
   }
