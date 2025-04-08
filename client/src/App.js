@@ -21,6 +21,10 @@ import { onAuthStateChanged } from "firebase/auth";
 import { loggedInUser } from "./features/user/userSlice.js";
 import ForgotPassword from "./pages/auth/ForgotPassword.js";
 import { currentUser } from "./functions/auth.js";
+import History from "./pages/user/History.js";
+import UserRoute from "./components/routes/UserRoute.js";
+import Password from "./pages/user/Password.js";
+import Wishlist from "./pages/user/Wishlist.js";
 
 
 
@@ -61,6 +65,15 @@ function App() {
       <Route exact path="/register" element={<Register />} />
       <Route exact path="/register/complete" element={<RegisterComplete />} />
       <Route exact path="/forgot/password" element={<ForgotPassword />} />
+
+      
+      {/* protected routes */}
+      <Route path="/user/history" element={ <UserRoute>  <History />  </UserRoute> }/>
+      <Route path="/user/password" element={ <UserRoute>  <Password />  </UserRoute> }/>
+      <Route path="/user/wishlist" element={ <UserRoute>  <Wishlist />  </UserRoute> }/>
+
+
+
 
     </Routes>
     </>
