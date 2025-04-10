@@ -1,4 +1,7 @@
 import admin from '../firebase/index.js'
+import User from "../models/user.js";
+
+
 
 export const authCheck = async (req , res , next ) => {
     //console.log(req.headers);
@@ -17,3 +20,17 @@ export const authCheck = async (req , res , next ) => {
           })
     }
 }
+
+export const adminCheck = async (req, res ,next ) => {
+  const {email} = req.user;
+
+  const adminUser = await User.findOne({email}).exec();
+
+  if(adminUser.role !== "admin"){
+    res.status(403).json({
+      err : "Bakchodi nhi laude , admin ka kaam hai"
+    });
+  } else{
+    next();
+  }
+};

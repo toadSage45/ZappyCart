@@ -25,6 +25,9 @@ import History from "./pages/user/History.js";
 import UserRoute from "./components/routes/UserRoute.js";
 import Password from "./pages/user/Password.js";
 import Wishlist from "./pages/user/Wishlist.js";
+import AdminDashboard from "./pages/admin/AdminDashboard.js";
+import AdminRoute from "./components/routes/AdminRoute.js";
+import CategoryCreate from "./pages/admin/category/CategoryCreate.js";
 
 
 
@@ -71,8 +74,8 @@ function App() {
       <Route path="/user/history" element={ <UserRoute>  <History />  </UserRoute> }/>
       <Route path="/user/password" element={ <UserRoute>  <Password />  </UserRoute> }/>
       <Route path="/user/wishlist" element={ <UserRoute>  <Wishlist />  </UserRoute> }/>
-
-
+      <Route path="/admin/dashboard" element={ <AdminRoute>  <AdminDashboard />  </AdminRoute> }/>
+      <Route path="/admin/category" element={ <AdminRoute>  <CategoryCreate />  </AdminRoute> }/>
 
 
     </Routes>

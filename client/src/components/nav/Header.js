@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch , useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Menu } from "antd";
 import {
   HomeOutlined,
@@ -17,7 +17,7 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
-  const {email , token } = useSelector((state) => state.user);
+  const { email, token, role } = useSelector((state) => state.user);
   const handleClick = (e) => {
     setCurrent(e.key);
   };
@@ -34,33 +34,40 @@ const Header = () => {
       key: "home",
       icon: <HomeOutlined />,
     },
-   !email && {
-      
-        label: <Link to="/register">Register</Link>,
-        key: "register",
-        icon: <UserAddOutlined />,
-        className: "float-right"
+    !email && {
+
+      label: <Link to="/register">Register</Link>,
+      key: "register",
+      icon: <UserAddOutlined />,
+      className: "float-right"
     },
-   !email && {
+    !email && {
       label: <Link to="/login">Login</Link>,
       key: "login",
       icon: <LoginOutlined />,
       className: "float-right"
     },
-   email && {
+    email && {
       label: `${email.split('@')[0]}`,
       key: "SubMenu",
       icon: <UserOutlined />,
-      className : "float-right",
+      className: "float-right",
       children: [
+        (email && role === "subscriber") &&
+
         {
-          label: "Option 1",
-          key: "setting:1",
+          label: <Link to="/user/history">Dashboard</Link>,
+          key: "dashboard",
         },
+
+        (email && role === "admin") &&
+
         {
-          label: "Option 2",
-          key: "setting:2",
+          label: <Link to="/admin/dashboard">Dashboard</Link>,
+          key: "admindashboard",
         },
+
+
         {
           label: "Logout",
           key: "logout",
