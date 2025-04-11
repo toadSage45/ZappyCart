@@ -28,6 +28,9 @@ import Wishlist from "./pages/user/Wishlist.js";
 import AdminDashboard from "./pages/admin/AdminDashboard.js";
 import AdminRoute from "./components/routes/AdminRoute.js";
 import CategoryCreate from "./pages/admin/category/CategoryCreate.js";
+import CategoryUpdate from "./pages/admin/category/CategoryUpdate.js";
+import SubCreate from "./pages/admin/sub/SubCreate.js";
+import SubUpdate from "./pages/admin/sub/SubUpdate.js";
 
 
 
@@ -76,8 +79,9 @@ function App() {
       <Route path="/user/wishlist" element={ <UserRoute>  <Wishlist />  </UserRoute> }/>
       <Route path="/admin/dashboard" element={ <AdminRoute>  <AdminDashboard />  </AdminRoute> }/>
       <Route path="/admin/category" element={ <AdminRoute>  <CategoryCreate />  </AdminRoute> }/>
-
-
+      <Route path="/admin/category/:slug" element={ <AdminRoute>  <CategoryUpdate />  </AdminRoute> }/>
+      <Route path="/admin/sub" element={ <AdminRoute>  <SubCreate />  </AdminRoute> }/>
+      <Route path="/admin/sub/:slug" element={ <AdminRoute>  <SubUpdate />  </AdminRoute> }/>
     </Routes>
     </>
   );
