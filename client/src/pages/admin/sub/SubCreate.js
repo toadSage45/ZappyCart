@@ -13,13 +13,16 @@ import { toast } from 'react-toastify';
 import { Link } from "react-router-dom";
 import CategoryForm from '../../../components/forms/CategoryForm';
 import LocalSearch from '../../../components/forms/LocalSearch';
+import { createSub, getSubs, removeSub } from '../../../functions/sub';
 
-const CategoryCreate = () => {
+const SubCreate = () => {
 
     const [name, setName] = useState("")
     const [loading, setLoading] = useState(false)
     const { token } = useSelector((state) => state.user)
     const [categories, setCategories] = useState([]);
+    const [category ,setCategory] = useState("");
+    const [subs, setSubs] = useState([]);
 
     //serching 
     // step-1
@@ -28,11 +31,21 @@ const CategoryCreate = () => {
 
     useEffect(() => {
         loadCategories();
+        loadSubs();
     }, [])
 
     const loadCategories = () => {
         getCategories()
             .then((c) => setCategories(c.data))
+            .catch((err) => {
+                //console.log(err);
+                if (err.response.status === 400) toast.error(err.response.data)
+            })
+    }
+
+    const loadSubs = () => {
+        getSubs()
+            .then((c) => setSubs(c.data))
             .catch((err) => {
                 //console.log(err);
                 if (err.response.status === 400) toast.error(err.response.data)
@@ -46,13 +59,13 @@ const CategoryCreate = () => {
         e.preventDefault()
         //console.log(name)
         setLoading(true);
-        createCategory({ name }, token)
+        createSub({ name , parent : category}, token)
             .then((res) => {
                 console.log(res);
                 setLoading(false);
                 setName("");
                 toast.success(`"${res.data.name}" is created`);
-                loadCategories();
+                loadSubs();
 
             })
             .catch((err) => {
@@ -67,10 +80,10 @@ const CategoryCreate = () => {
         //console.log(answer ,c.slug);
         if (answer) {
             setLoading(true);
-            removeCategory(c.slug, token,)
+            removeSub(c.slug, token,)
                 .then((res) => {
                     setLoading(false);
-                    loadCategories();
+                    loadSubs();
                     toast.success(`${res.data.name} successfully deleted😢`)
                 })
                 .catch((err) => {
@@ -97,8 +110,26 @@ const CategoryCreate = () => {
                 <div className="col-md-2"> <AdminNav /> </div>
 
                 <div className="col">
-                    {(loading) ? <h4 className='text-danger'>Loading...</h4> : <h4>Create Category</h4>}
+                    {(loading) ? <h4 className='text-danger'>Loading...</h4> : <h4>Create Sub Category</h4>}
+                    
+                    <div class="form-grouo">
+                        <label>Parent Category</label>
+                        <select  name="category" className= "form-control" onChange={ (e) => {
+                            setCategory(e.target.value);
+                        }}>
+                            <option>Please Select</option>
+                            {
+                                categories.length > 0 &&
+                                categories.map((c) => {
+                                    return(
+                                        <option key={c._id} value={c._id} >{c.name}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                    </div>
 
+                    {/* {JSON.stringify(category)} */}
 
                     <CategoryForm handleSubmit={handleSubmit}
                         name={name}
@@ -113,20 +144,21 @@ const CategoryCreate = () => {
                     keyword={keyword} 
                     setKeword={setKeword}
                     />
-
+                    
+                
 
                     <hr />
                     
                     {/*searching step-5 */}
 
-                    {categories.filter(searched(keyword)).map(c => {
+                    {subs.filter(searched(keyword)).map((s) => {
                         return (
-                            <div className='alert alert-primary' key={c._id}>{c.name}
-                                <span onClick={() => handleRemove(c)}
+                            <div className='alert alert-primary' key={s._id}>{s.name}
+                                <span onClick={() => handleRemove(s)}
                                     className='btn btn-sm float-right'>
                                     <DeleteFilled className='text-danger' />
                                 </span>
-                                <Link to={`/admin/category/${c.slug}`}>
+                                <Link to={`/admin/sub/${s.slug}`}>
                                     <span className='btn btn-sm float-right'>
                                         <EditOutlined className='text-danger' />
                                     </span>
@@ -140,4 +172,4 @@ const CategoryCreate = () => {
     )
 }
 
-export default CategoryCreate
+export default SubCreate
