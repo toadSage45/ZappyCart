@@ -31,6 +31,7 @@ import CategoryCreate from "./pages/admin/category/CategoryCreate.js";
 import CategoryUpdate from "./pages/admin/category/CategoryUpdate.js";
 import SubCreate from "./pages/admin/sub/SubCreate.js";
 import SubUpdate from "./pages/admin/sub/SubUpdate.js";
+import ProductCreate from "./pages/admin/product/ProductCreate.js";
 
 
 
@@ -82,6 +83,9 @@ function App() {
       <Route path="/admin/category/:slug" element={ <AdminRoute>  <CategoryUpdate />  </AdminRoute> }/>
       <Route path="/admin/sub" element={ <AdminRoute>  <SubCreate />  </AdminRoute> }/>
       <Route path="/admin/sub/:slug" element={ <AdminRoute>  <SubUpdate />  </AdminRoute> }/>
+      <Route path="/admin/sub" element={ <AdminRoute>  <SubCreate />  </AdminRoute> }/>
+      <Route path="/admin/product" element={ <AdminRoute>  <ProductCreate />  </AdminRoute> }/>
+
     </Routes>
     </>
   );

@@ -112,7 +112,7 @@ const SubCreate = () => {
                 <div className="col">
                     {(loading) ? <h4 className='text-danger'>Loading...</h4> : <h4>Create Sub Category</h4>}
                     
-                    <div class="form-grouo">
+                    <div className="form-group">
                         <label>Parent Category</label>
                         <select  name="category" className= "form-control" onChange={ (e) => {
                             setCategory(e.target.value);
