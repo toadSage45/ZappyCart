@@ -30,14 +30,11 @@ export const updateCategory = async (slug , category , authtoken) => {
     });
 }
 
-export const createCategory = async (category , authtoken) => {
+export const createProduct = async (product , authtoken) => {
     //console.log(`${process.env.REACT_APP_API}/category/${slug}`);
-    return axios.post(`${process.env.REACT_APP_API}/category` , category ,  {
+    return axios.post(`${process.env.REACT_APP_API}/product` , product ,  {
         headers : {
             authtoken , 
         }
     });
-}
-export const getCategorySubs = async (_id) => {
-    return axios.get(`${process.env.REACT_APP_API}/category/subs/${_id}`);
 }
