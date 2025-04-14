@@ -4,6 +4,8 @@ import {
     DeleteFilled,
     EditFilled,
     EditOutlined,
+    Loading3QuartersOutlined,
+    LoadingOutlined,
     PlusCircleFilled,
     PlusCircleOutlined,
 } from "@ant-design/icons";
@@ -14,6 +16,7 @@ import LocalSearch from '../../../components/forms/LocalSearch';
 import { createProduct } from '../../../functions/product';
 import ProductCreateForm from '../../../components/forms/ProductCreateForm';
 import { getCategories, getCategorySubs } from '../../../functions/category';
+import FileUpload from '../../../components/forms/FileUpload';
 
 
 const initialState =
@@ -40,6 +43,7 @@ const ProductCreate = () => {
     const [categories, setCategories] = useState("");
     const [subOptions, setSubOptions] = useState([]);
     const [showSub, setShowSub] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { token } = useSelector(state => state.user)
 
     useEffect(() => {
@@ -97,11 +101,17 @@ const ProductCreate = () => {
                 </div>
 
                 <div className="col-md-10">
-                    <h4>Product Create</h4>
-                    {/* {JSON.stringify(values.subs)} */}
+                    {loading ? <LoadingOutlined className='text-danger h1'/> :<h4>Product Create</h4>}
+                    {/* {JSON.stringify(values.images)} */}
                     <hr />
 
-
+                    <div className="p-3">
+                        <FileUpload 
+                        values={values} 
+                        setValues={setValues} 
+                        setLoading={setLoading} 
+                        />
+                    </div>
 
                     <ProductCreateForm
                         showSub={showSub}
@@ -112,6 +122,7 @@ const ProductCreate = () => {
                         handleSubmit={handleSubmit}
                         handleChange={handleChange}
                         values={values} />
+
                 </div>
             </div>
         </div>
