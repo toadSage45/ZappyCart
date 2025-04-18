@@ -14,7 +14,7 @@ const AdminNav = () => {
             </li>
 
             <li className=' nav-item'>
-               <Link to = "/user/products" className='nav-link' >PRODUCTS</Link>
+               <Link to = "/admin/products" className='nav-link' >PRODUCTS</Link>
             </li>
 
             <li className=' nav-item'>

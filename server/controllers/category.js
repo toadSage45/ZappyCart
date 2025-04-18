@@ -41,7 +41,7 @@ export const remove = async (req, res) => {
         res.status(200).json(deleted);
     } catch (error) {
         //console.log(error)
-        res.status(400).send('Create Category Failed');
+        res.status(400).send('Delete Category Failed');
     }
 }
 export const getSubs = async (req, res) => {
