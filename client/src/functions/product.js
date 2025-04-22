@@ -7,9 +7,9 @@ export const getProductsByCount = async (count) => {
 }
 
 
-export const getCategory = async (slug) => {
-    //console.log(`${process.env.REACT_APP_API}/category/${slug}`);
-    return axios.get(`${process.env.REACT_APP_API}/category/${slug}`);
+export const getProduct = async (slug) => {
+    //console.log(`${process.env.REACT_APP_API}/product/${slug}`);
+    return axios.get(`${process.env.REACT_APP_API}/product/${slug}`);
 }
 
 export const removeProduct = async (slug ,authtoken) => {
