@@ -38,3 +38,11 @@ export const remove = async (req, res) => {
         res.status(400).send('Delete Product Failed');
     }
 }
+
+export const read = async (req, res) => {
+    const product = await Product.findOne({ slug: req.params.slug })
+    .populate('category')
+    .populate('subs')
+    .exec();
+    res.json(product);
+}
