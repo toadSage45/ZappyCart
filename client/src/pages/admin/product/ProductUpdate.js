@@ -96,6 +96,8 @@ const ProductUpdate = () => {
                 //setShowSub(true);
             })
             .catch()
+
+            setArrayOfSubIds([]);
     }
 
     const handleSubmit = (e) => {
