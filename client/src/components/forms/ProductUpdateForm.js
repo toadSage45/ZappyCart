@@ -107,7 +107,7 @@ const ProductUpdateForm = (props) => {
                     name="category"
                     className="form-control"
                     onChange={props.handleCategoryChange} 
-                    value={category._id}
+                    value={props.selectedCategory ? props.selectedCategory: category._id}
                 >
                     <option> {category ? category.name : "Please Select"}</option>
                     {
@@ -139,7 +139,7 @@ const ProductUpdateForm = (props) => {
 
 
 
-            <br /> 
+            <br />
 
             <button
                 type="submit"
