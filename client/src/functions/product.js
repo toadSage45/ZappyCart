@@ -12,29 +12,40 @@ export const getProduct = async (slug) => {
     return axios.get(`${process.env.REACT_APP_API}/product/${slug}`);
 }
 
-export const removeProduct = async (slug ,authtoken) => {
+export const removeProduct = async (slug, authtoken) => {
     //console.log(`${process.env.REACT_APP_API}/product/${slug}`);
-    return axios.delete(`${process.env.REACT_APP_API}/product/${slug}` , {
-        headers : {
-            authtoken ,
-        }
-    });
-}
-
-export const updateProduct = async (slug , product , authtoken) => {
-    //console.log(`${process.env.REACT_APP_API}/product/${slug}`);
-    return axios.put(`${process.env.REACT_APP_API}/product/${slug}` , product , {
-        headers : {
+    return axios.delete(`${process.env.REACT_APP_API}/product/${slug}`, {
+        headers: {
             authtoken,
         }
     });
 }
 
-export const createProduct = async (product , authtoken) => {
-    //console.log(`${process.env.REACT_APP_API}/category/${slug}`);
-    return axios.post(`${process.env.REACT_APP_API}/product` , product ,  {
-        headers : {
-            authtoken , 
+export const updateProduct = async (slug, product, authtoken) => {
+    //console.log(`${process.env.REACT_APP_API}/product/${slug}`);
+    return axios.put(`${process.env.REACT_APP_API}/product/${slug}`, product, {
+        headers: {
+            authtoken,
         }
     });
 }
+
+export const createProduct = async (product, authtoken) => {
+    //console.log(`${process.env.REACT_APP_API}/category/${slug}`);
+    return axios.post(`${process.env.REACT_APP_API}/product`, product, {
+        headers: {
+            authtoken,
+        }
+    });
+}
+
+export const getProducts = async (sort, order, page) =>
+    //console.log(`${process.env.REACT_APP_API}/products`)
+    await axios.post(`${process.env.REACT_APP_API}/products`, {
+        sort,
+        order,
+        page,
+    });
+
+export const getProductsCount = async () =>
+    await axios.get(`${process.env.REACT_APP_API}/products/total`); 

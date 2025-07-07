@@ -34,6 +34,7 @@ import SubUpdate from "./pages/admin/sub/SubUpdate.js";
 import ProductCreate from "./pages/admin/product/ProductCreate.js";
 import AllProduct from "./pages/admin/product/AllProduct.js";
 import ProductUpdate from "./pages/admin/product/ProductUpdate.js";
+import Product from "./pages/product.js";
 
 
 
@@ -75,7 +76,7 @@ function App() {
       <Route exact path="/register" element={<Register />} />
       <Route exact path="/register/complete" element={<RegisterComplete />} />
       <Route exact path="/forgot/password" element={<ForgotPassword />} />
-
+      <Route exact path = "/product/:slug" element = {<Product/>}/>
       
       {/* protected routes */}
       <Route path="/user/history" element={ <UserRoute>  <History />  </UserRoute> }/>

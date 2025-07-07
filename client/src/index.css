@@ -1,0 +1,35 @@
+.slider img {
+  height: 450px;
+  object-fit: cover;
+}
+.card-image{
+  height: 450px;
+  object-fit: cover;
+}
+
+
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.value {
+  background-color: #f0f0f0;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.badge {
+  background-color: #dfe6e9;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: #2d3436;
+}
+
+.badge:hover {
+  background-color: #b2bec3;
+}

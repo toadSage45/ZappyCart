@@ -66,3 +66,53 @@ export const update = async (req, res) => {
     });
   }
 };
+//without pagination
+// export const list = async (req, res) => {
+//   try {
+//     // createdAt/updatedAt, desc/asc, 3
+//     const { sort, order, limit } = req.body;
+//     const products = await Product.find({})
+//       .populate("category")
+//       .populate("subs")
+//       .sort([[sort, order]])
+//       .limit(limit)
+//       .exec();
+
+//     res.json(products);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
+
+// WITH PAGINATION
+export const list = async (req, res) => {
+  // console.table(req.body);
+  try {
+    // createdAt/updatedAt, desc/asc, 3
+    const { sort, order, page } = req.body;
+    const currentPage = page || 1;
+    const perPage = 3;  //can be modified from frontend
+
+    const products = await Product.find({})
+      .skip((currentPage - 1) * perPage)
+      .populate("category")
+      .populate("subs")
+      .sort([[sort, order]])
+      .limit(perPage)
+      .exec();
+
+    res.json(products);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const productsCount = async (req, res) => {
+  try {
+    const total = await Product.estimatedDocumentCount().exec();
+    res.json( total );
+  } catch (err) {
+    console.error("Error fetching product count:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
