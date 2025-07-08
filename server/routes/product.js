@@ -1,10 +1,7 @@
 import express, { Router } from 'express';
 
 import { adminCheck, authCheck } from '../middlewares/auth.js';
-import { create, listAll, read, remove, update, list, productsCount } from '../controllers/product.js';
-
-
-
+import { create, listAll, read, remove, update, list, productsCount, productStar, listRelated } from '../controllers/product.js';
 
 const router = express.Router();
 
@@ -18,7 +15,9 @@ router.put("/product/:slug" , authCheck , adminCheck ,update )
 router.delete("/product/:slug" , authCheck , adminCheck , remove )
 
 router.post("/products" , list);
-
-
+//rating
+router.put("/product/star/:productId", authCheck, productStar);
+//related product
+router.get("/product/related/:productId", listRelated )
 
 export default router;
