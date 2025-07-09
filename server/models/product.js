@@ -56,12 +56,10 @@ const productSchema = new mongoose.Schema({
         enum : ["Yes" , "No"],
     },
     color : {
-        type : String , 
-        enum : ["Black" , "Brown" , "Silver" ,"White" ,"Blue" ],
+        type : String 
     },
     brand : {
-        type : String , 
-        enum : ["Apple" , "Samsung" , "Lenovo" ,"Microsoft" ,"ASUS"],
+        type : String
     },
     ratings : [
         {

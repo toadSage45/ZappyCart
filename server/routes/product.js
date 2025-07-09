@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
 
 import { adminCheck, authCheck } from '../middlewares/auth.js';
-import { create, listAll, read, remove, update, list, productsCount, productStar, listRelated } from '../controllers/product.js';
+import { create, listAll, read, remove, update, list, productsCount, productStar, listRelated, searchFilters } from '../controllers/product.js';
 
 const router = express.Router();
 
@@ -19,5 +19,9 @@ router.post("/products" , list);
 router.put("/product/star/:productId", authCheck, productStar);
 //related product
 router.get("/product/related/:productId", listRelated )
+//search
+router.post("/search/filters", searchFilters);
+
+
 
 export default router;

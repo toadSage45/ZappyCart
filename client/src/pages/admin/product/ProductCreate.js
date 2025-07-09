@@ -30,8 +30,6 @@ const initialState =
     shipping: '',
     quantity: '',
     images: [],
-    colors: ["Black", "Brown", "Silver", "White", "Blue"],
-    brands: ["Apple", "Samsung", "Lenovo", "Microsoft", "ASUS"],
     color: '',
     brand: ''
 
@@ -40,7 +38,7 @@ const initialState =
 
 const ProductCreate = () => {
     const [values, setValues] = useState(initialState);
-    const [categories, setCategories] = useState("");
+    const [categories, setCategories] = useState([]);
     const [subOptions, setSubOptions] = useState([]);
     const [showSub, setShowSub] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -82,7 +80,7 @@ const ProductCreate = () => {
     const handleCategoryChange = (e) => {
         e.preventDefault();
         //console.log(`clicked category ${e.target.value}`)
-        setValues({ ...values, subs:[], category: e.target.value })
+        setValues({ ...values, subs: [], category: e.target.value })
         getCategorySubs(e.target.value)
             .then(res => {
                 //console.log("res.data-- ",res.data);
@@ -101,20 +99,20 @@ const ProductCreate = () => {
                 </div>
 
                 <div className="col-md-10">
-                    {loading ? <LoadingOutlined className='text-danger h1'/> :<h4>Product Create</h4>}
+                    {loading ? <LoadingOutlined className='text-danger h1' /> : <h4>Product Create</h4>}
                     {/* {JSON.stringify(values.images)} */}
                     <hr />
 
                     <div className="p-3">
-                        <FileUpload 
-                        values={values} 
-                        setValues={setValues} 
-                        setLoading={setLoading} 
+                        <FileUpload
+                            values={values}
+                            setValues={setValues}
+                            setLoading={setLoading}
                         />
                     </div>
 
                     <br />
-                    
+
                     <ProductCreateForm
                         showSub={showSub}
                         subOptions={subOptions}

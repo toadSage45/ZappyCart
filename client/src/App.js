@@ -1,6 +1,6 @@
-import React , {useEffect} from "react";
+import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import {ToastContainer} from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/ReactToastify.css';
 
 
@@ -35,7 +35,9 @@ import ProductCreate from "./pages/admin/product/ProductCreate.js";
 import AllProduct from "./pages/admin/product/AllProduct.js";
 import ProductUpdate from "./pages/admin/product/ProductUpdate.js";
 import Product from "./pages/product.js";
-
+import CategoryHome from "./pages/category/CategoryHome";
+import SubHome from "./pages/sub/SubHome";
+import Shop from "./pages/Shop";
 
 
 
@@ -45,55 +47,58 @@ import Product from "./pages/product.js";
 function App() {
 
   const dispatch = useDispatch();
-  useEffect( () => {
-    const unsubscirbe = onAuthStateChanged(auth , async (user) => {
-      if(user) {
+  useEffect(() => {
+    const unsubscirbe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
         const idTokenResult = await user.getIdTokenResult();
         currentUser(idTokenResult.token)
-              .then((res) => {
-                console.log(res.data);
-                dispatch(loggedInUser({
-                  name : res.data.name,
-                  email: res.data.email,
-                  token: idTokenResult.token,
-                  role : res.data.role , 
-                  _id : res.data._id,
-                }));
-              })
-              .catch(err => console.log(err));
+          .then((res) => {
+            console.log(res.data);
+            dispatch(loggedInUser({
+              name: res.data.name,
+              email: res.data.email,
+              token: idTokenResult.token,
+              role: res.data.role,
+              _id: res.data._id,
+            }));
+          })
+          .catch(err => console.log(err));
       }
     })
     return () => unsubscirbe();
-  } , [])
+  }, [])
 
 
   return (<>
-    <Header/>
-    <ToastContainer/>
+    <Header />
+    <ToastContainer />
     <Routes>
       <Route exact path="/" element={<Home />} />
       <Route exact path="/login" element={<Login />} />
       <Route exact path="/register" element={<Register />} />
       <Route exact path="/register/complete" element={<RegisterComplete />} />
       <Route exact path="/forgot/password" element={<ForgotPassword />} />
-      <Route exact path = "/product/:slug" element = {<Product/>}/>
-      
+      <Route exact path="/product/:slug" element={<Product />} />
+      <Route exact path="/category/:slug" element={<CategoryHome />} />
+      <Route exact path="/sub/:slug" element={<SubHome />} />
+      <Route exact path="/shop" element={<Shop />} />
+
       {/* protected routes */}
-      <Route path="/user/history" element={ <UserRoute>  <History />  </UserRoute> }/>
-      <Route path="/user/password" element={ <UserRoute>  <Password />  </UserRoute> }/>
-      <Route path="/user/wishlist" element={ <UserRoute>  <Wishlist />  </UserRoute> }/>
-      <Route path="/admin/dashboard" element={ <AdminRoute>  <AdminDashboard />  </AdminRoute> }/>
-      <Route path="/admin/category" element={ <AdminRoute>  <CategoryCreate />  </AdminRoute> }/>
-      <Route path="/admin/category/:slug" element={ <AdminRoute>  <CategoryUpdate />  </AdminRoute> }/>
-      <Route path="/admin/sub" element={ <AdminRoute>  <SubCreate />  </AdminRoute> }/>
-      <Route path="/admin/sub/:slug" element={ <AdminRoute>  <SubUpdate />  </AdminRoute> }/>
-      <Route path="/admin/sub" element={ <AdminRoute>  <SubCreate />  </AdminRoute> }/>
-      <Route path="/admin/product" element={ <AdminRoute>  <ProductCreate />  </AdminRoute> }/>
-      <Route path="/admin/products" element={ <AdminRoute>  <AllProduct />  </AdminRoute> }/>
-      <Route path="/admin/product/:slug" element={ <AdminRoute>  <ProductUpdate />  </AdminRoute> }/>
+      <Route path="/user/history" element={<UserRoute>  <History />  </UserRoute>} />
+      <Route path="/user/password" element={<UserRoute>  <Password />  </UserRoute>} />
+      <Route path="/user/wishlist" element={<UserRoute>  <Wishlist />  </UserRoute>} />
+      <Route path="/admin/dashboard" element={<AdminRoute>  <AdminDashboard />  </AdminRoute>} />
+      <Route path="/admin/category" element={<AdminRoute>  <CategoryCreate />  </AdminRoute>} />
+      <Route path="/admin/category/:slug" element={<AdminRoute>  <CategoryUpdate />  </AdminRoute>} />
+      <Route path="/admin/sub" element={<AdminRoute>  <SubCreate />  </AdminRoute>} />
+      <Route path="/admin/sub/:slug" element={<AdminRoute>  <SubUpdate />  </AdminRoute>} />
+      <Route path="/admin/sub" element={<AdminRoute>  <SubCreate />  </AdminRoute>} />
+      <Route path="/admin/product" element={<AdminRoute>  <ProductCreate />  </AdminRoute>} />
+      <Route path="/admin/products" element={<AdminRoute>  <AllProduct />  </AdminRoute>} />
+      <Route path="/admin/product/:slug" element={<AdminRoute>  <ProductUpdate />  </AdminRoute>} />
 
     </Routes>
-    </>
+  </>
   );
 }
 

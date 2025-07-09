@@ -168,3 +168,37 @@ export const listRelated = async (req, res) => {
 
   res.json(related);
 };
+
+//search based on name of the product
+const handleQuery = async (req, res, query) => {
+  try {
+    const products = await Product.find({
+      $or: [
+        { $text: { $search: query } }, // full-word match
+        { title: { $regex: query, $options: "i" } } // partial match (case-insensitive)
+      ]
+    })
+      .populate("category", "_id name")
+      .populate("subs", "_id name")
+      //.populate("postedBy", "_id name")
+      .exec();
+
+    res.json(products);
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+
+
+
+//Search or filter
+export const searchFilters = async (req, res) => {
+  const { query } = req.body;
+
+  if (query) {
+    console.log("query", query);
+    await handleQuery(req, res, query);
+  }
+};

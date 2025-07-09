@@ -40,8 +40,6 @@ const CategoryCreate = () => {
     }
 
 
-
-
     const handleSubmit = (e) => {
         e.preventDefault()
         //console.log(name)
@@ -81,8 +79,6 @@ const CategoryCreate = () => {
         }
 
     }
-
-
   
 
     // serching step-4

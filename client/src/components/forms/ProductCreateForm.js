@@ -6,7 +6,7 @@ const {Option} = Select;
 
 
 const ProductCreateForm = (props) => {
-    const { title, description, price, categories, category, subs, shipping, quantity, images, colors, color, brands, brand } = props.values;
+    const { title, description, price, categories, category, subs, shipping, quantity, images, color, brand } = props.values;
 
     return (
         <form onSubmit={props.handleSubmit}>
@@ -70,34 +70,24 @@ const ProductCreateForm = (props) => {
 
             <div className="form-group">
                 <label>Color</label>
-                <select
+                <input
+                    type="text"
                     name="color"
                     className='form-control'
+                    value={color}
                     onChange={props.handleChange}
-                >
-                    <option>Please Select</option>
-                    {colors.map((c) => {
-                        return (
-                            <option key={c} value={c}>{c}</option>
-                        )
-                    })}
-                </select>
+                />
             </div>
 
             <div className="form-group">
                 <label>Brand</label>
-                <select
+                <input
+                    type="text"
                     name="brand"
                     className='form-control'
+                    value={brand}
                     onChange={props.handleChange}
-                >
-                    <option>Please Select</option>
-                    {brands.map((b) => {
-                        return (
-                            <option key={b} value={b}>{b}</option>
-                        )
-                    })}
-                </select>
+                />
             </div>
 
             <div className="form-group">

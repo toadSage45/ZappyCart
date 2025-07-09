@@ -8,7 +8,7 @@ const initialState = {
     token : "",
     name : "" , 
     role : "" , 
-    _id : "" ,
+    _id : "" 
 }
 
 const userSlice = createSlice({

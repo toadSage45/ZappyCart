@@ -21,6 +21,11 @@ export const removeSub = async (slug ,authtoken) => {
     });
 }
 
+export const getProductsFromSubCategory = async (slug) => {
+    //console.log(`${process.env.REACT_APP_API}/subCategoryProduct/${slug}`);
+    return axios.get(`${process.env.REACT_APP_API}/subCategoryProduct/${slug}`);
+}
+
 export const updateSub = async (slug , sub , authtoken) => {
     //console.log(`${process.env.REACT_APP_API}/sub/${slug}`);
     return axios.put(`${process.env.REACT_APP_API}/sub/${slug}` , sub , {

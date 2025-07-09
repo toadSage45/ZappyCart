@@ -64,6 +64,7 @@ const SingleProduct = ({ product, onStarClick, star }) => {
                 allowHover
                 transition
                 fillColor="red"
+                allowFraction
               />
 
             </RatingModal>,

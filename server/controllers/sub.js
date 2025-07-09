@@ -1,6 +1,6 @@
 import slugify from "slugify";
 import Sub from "../models/sub.js"
-
+import Product from "../models/product.js";
 
 export const create = async (req , res) => {
     try {
@@ -23,6 +23,9 @@ export const read = async (req , res) => {
     const sub = await Sub.findOne({slug : req.params.slug}).exec();
     res.json(sub);
 }
+
+
+
 export const update = async  (req , res) => {
     try {
         const {changedName , parent} = req.body;
@@ -42,4 +45,14 @@ export const remove = async (req , res) => {
         //console.log(error)
         res.status(400).send('Create Sub Failed');
     }
+}
+
+export const readProductsFromSubCategory = async (req, res) => {
+    const sub = await Sub.findOne({ slug: req.params.slug }).exec();
+
+    const products = await Product.find({ subs : sub }).populate("category").populate("subs").exec();
+
+    res.json(
+        { sub, products }
+    );
 }
