@@ -1,5 +1,6 @@
 .slider img {
   height: 450px;
+  width: 450px;
   object-fit: cover;
 }
 .card-image{

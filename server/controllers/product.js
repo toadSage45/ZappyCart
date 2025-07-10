@@ -111,7 +111,7 @@ export const list = async (req, res) => {
 export const productsCount = async (req, res) => {
   try {
     const total = await Product.estimatedDocumentCount().exec();
-    res.json( total );
+    res.json(total);
   } catch (err) {
     console.error("Error fetching product count:", err);
     res.status(500).json({ error: "Server error" });
@@ -169,20 +169,15 @@ export const listRelated = async (req, res) => {
   res.json(related);
 };
 
-//search based on name of the product
+//filter based on name of the product
 const handleQuery = async (req, res, query) => {
   try {
     const products = await Product.find({
-      $or: [
-        { $text: { $search: query } }, // full-word match
-        { title: { $regex: query, $options: "i" } } // partial match (case-insensitive)
-      ]
+      title: { $regex: new RegExp(`\\b${query}`, "i") }
     })
       .populate("category", "_id name")
       .populate("subs", "_id name")
-      //.populate("postedBy", "_id name")
       .exec();
-
     res.json(products);
   } catch (err) {
     console.error("Search error:", err);
@@ -190,15 +185,110 @@ const handleQuery = async (req, res, query) => {
   }
 };
 
+//filter based on price
+const handlePrice = async (req, res, price) => {
+  try {
+    let products = await Product.find({
+      price: {
+        $gte: price[0], //Greater than or equal to
+        $lte: price[1], //Less than or equal to
+      },
+    })
+      .populate("category", "_id name")
+      .populate("subs", "_id name")
+      .exec();
 
+    res.json(products);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
+//filter based on category
+const handleCategory = async (req, res, category) => {
+  try {
+    let products = await Product.find({ category })
+      .populate("category", "_id name")
+      .populate("subs", "_id name")
+      .exec();
+
+    res.json(products);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+//filter based on rating
+const handleStar = async (req, res, stars) => {
+  try {
+    const aggregates = await Product.aggregate([
+      {
+        $project: {
+          _id: 1,
+          floorAverage: { $floor: { $avg: "$ratings.star" } },
+        },
+      },
+      { $match: { floorAverage: stars } },
+      { $limit: 12 },
+    ]);
+
+    const productIds = aggregates.map((p) => p._id);
+
+    const products = await Product.find({ _id: { $in: productIds } }) //$in->including this product id
+      .populate("category", "_id name")
+      .populate("subs", "_id name");
+    res.json(products);
+  } catch (err) {
+    console.error("STAR FILTER ERROR:", err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+//filter based on sub category
+const handleSub = async (req, res, sub) => {
+  const products = await Product.find({ subs: sub })
+    .populate("category", "_id name")
+    .populate("subs", "_id name")
+    .exec();
+
+  res.json(products);
+};
+
+//filter based on shipping
+const handleShipping = async (req, res, shipping) => {
+  const products = await Product.find({ shipping })
+    .populate("category", "_id name")
+    .populate("subs", "_id name")
+    .exec();
+  res.json(products);
+};
 
 //Search or filter
 export const searchFilters = async (req, res) => {
-  const { query } = req.body;
+  const { query, price, category, stars, sub, shipping } = req.body;
 
   if (query) {
-    console.log("query", query);
+    // console.log(query);
     await handleQuery(req, res, query);
+  }
+  if (price !== undefined) {
+    // console.log(price);
+    await handlePrice(req, res, price);
+  }
+  if (category) {
+    // console.log("category ---> ", category);
+    await handleCategory(req, res, category);
+  }
+  if (stars) {
+    // console.log("stars ---> ", stars);
+    await handleStar(req, res, stars);
+  }
+  if (sub) {
+    // console.log("sub ---> ", sub);
+    await handleSub(req, res, sub);
+  }
+  if (shipping) {
+    // console.log("shipping ---> ", shipping);
+    await handleShipping(req, res, shipping);
   }
 };

@@ -17,24 +17,24 @@ const ProductListItems = ({ product }) => {
     <ul className="list-group">
       <li className="list-group-item d-flex justify-content-between">
         Price
-        <span className="value">Rs {price}</span>
+        <span className="value">₹{price}</span>
       </li>
 
       {category && (
-        <li className="list-group-item d-flex justify-content-between">
+        <li className="list-group-item d-flex justify-content-between align-items-center">
           Category
-          <Link to={`/category/${category.slug}`} className="value">
+          <Link to={`/category/${category.slug}`} className="badge bg-secondary text-decoration-none">
             {category.name}
           </Link>
         </li>
       )}
 
       {subs && subs.length > 0 && (
-        <li className="list-group-item d-flex justify-content-between">
+        <li className="list-group-item d-flex justify-content-between align-items-start">
           Sub Categories
-          <span className="value" style={{ display: "flex", gap: "5px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <span className="d-flex flex-wrap justify-content-end gap-1" style={{ display: "flex", gap: "5px", flexWrap: "wrap", justifyContent: "flex-end" }}>
             {subs.map((s) => (
-              <Link key={s._id} to={`/sub/${s.slug}`} className="badge">
+              <Link key={s._id} to={`/sub/${s.slug}`} className="badge bg-secondary text-decoration-none">
                 {s.name}
               </Link>
             ))}

@@ -71,34 +71,24 @@ const ProductUpdateForm = (props) => {
 
             <div className="form-group">
                 <label>Color</label>
-                <select
+                <input
+                    type="text"
                     name="color"
                     className='form-control'
-                    onChange={props.handleChange}
                     value={color}
-                >
-                    {colors.map((c) => {
-                        return (
-                            <option key={c} value={c}>{c}</option>
-                        )
-                    })}
-                </select>
+                    onChange={props.handleChange}
+                />
             </div>
 
             <div className="form-group">
                 <label>Brand</label>
-                <select
+                <input
+                    type="text"
                     name="brand"
                     className='form-control'
-                    onChange={props.handleChange}
                     value={brand}
-                >
-                    {brands.map((b) => {
-                        return (
-                            <option key={b} value={b}>{b}</option>
-                        )
-                    })}
-                </select>
+                    onChange={props.handleChange}
+                />
             </div>
 
             <div className="form-group">
