@@ -40,6 +40,7 @@ import SubHome from "./pages/sub/SubHome";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
 import SideDrawer from "./components/drawer/SideDrawer.js";
+import Checkout from "./pages/Checkout";
 
 
 
@@ -74,7 +75,7 @@ function App() {
 
   return (<>
     <Header />
-    <SideDrawer/>
+    <SideDrawer />
     <ToastContainer />
     <Routes>
       <Route exact path="/" element={<Home />} />
@@ -92,6 +93,7 @@ function App() {
       <Route path="/user/history" element={<UserRoute>  <History />  </UserRoute>} />
       <Route path="/user/password" element={<UserRoute>  <Password />  </UserRoute>} />
       <Route path="/user/wishlist" element={<UserRoute>  <Wishlist />  </UserRoute>} />
+      <Route path="/user/checkout" element={<UserRoute>  <Checkout />  </UserRoute>} />
       <Route path="/admin/dashboard" element={<AdminRoute>  <AdminDashboard />  </AdminRoute>} />
       <Route path="/admin/category" element={<AdminRoute>  <CategoryCreate />  </AdminRoute>} />
       <Route path="/admin/category/:slug" element={<AdminRoute>  <CategoryUpdate />  </AdminRoute>} />

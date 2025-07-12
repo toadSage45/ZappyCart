@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ProductCardInCheckout from "../components/cards/ProductCardInCheckout";
 import { setCart } from '../features/cart/cartSlice';
+import { userCart } from "../functions/user";
 
 const Cart = () => {
     // redux
@@ -26,7 +27,13 @@ const Cart = () => {
     };
 
     const saveOrderToDb = () => {
-        //
+        userCart(cart, user.token)
+            .then((res) => {
+                console.log("CART POST RES", res);
+                if (res.data.ok) navigate("/user/checkout");
+            })
+            .catch((err) => console.log("cart save err", err));
+        
     };
 
     const handleRemove = (productId) => {
@@ -37,25 +44,25 @@ const Cart = () => {
     };
 
     const showCartItems = () => (
-    <table className="table table-bordered text-center align-middle">
-        <thead className="table-light">
-            <tr>
-                <th scope="col">Image</th>
-                <th scope="col">Title</th>
-                <th scope="col">Price</th>
-                <th scope="col">Color</th>
-                <th scope="col">Count</th>
-                <th scope="col">Shipping</th>
-                <th scope="col">Remove</th>
-            </tr>
-        </thead>
-        <tbody>
-            {cart.map((p) => (
-                <ProductCardInCheckout key={p._id} p={p} handleRemove={handleRemove} />
-            ))}
-        </tbody>
-    </table>
-);
+        <table className="table table-bordered text-center align-middle">
+            <thead className="table-light">
+                <tr>
+                    <th scope="col">Image</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Color</th>
+                    <th scope="col">Count</th>
+                    <th scope="col">Shipping</th>
+                    <th scope="col">Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {cart.map((p) => (
+                    <ProductCardInCheckout key={p._id} p={p} handleRemove={handleRemove} />
+                ))}
+            </tbody>
+        </table>
+    );
 
 
     return (
@@ -63,8 +70,8 @@ const Cart = () => {
             <div className="row">
                 <div className="col-md-8">
                     <h4 className="mb-4">
-  {cart.length === 0 ? "🛒 No Products in Cart" : `🛒 ${cart.length} Product${cart.length > 1 ? "s" : ""} in Cart`}
-</h4>
+                        {cart.length === 0 ? "🛒 No Products in Cart" : `🛒 ${cart.length} Product${cart.length > 1 ? "s" : ""} in Cart`}
+                    </h4>
 
 
                     {!cart.length ? (
