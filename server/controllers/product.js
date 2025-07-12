@@ -169,126 +169,62 @@ export const listRelated = async (req, res) => {
   res.json(related);
 };
 
-//filter based on name of the product
-const handleQuery = async (req, res, query) => {
+//Search or filter
+export const searchFilters = async (req, res) => {
   try {
-    const products = await Product.find({
-      title: { $regex: new RegExp(`\\b${query}`, "i") }
-    })
+    const { query, price, category, stars, sub, shipping } = req.body;
+
+    let filter = {};
+
+    // Text search (title)
+    if (query) {
+      filter.title = { $regex: new RegExp(`\\b${query}`, "i") };
+    }
+
+    // Price range
+    if (price && price.length === 2) {
+      filter.price = { $gte: price[0], $lte: price[1] };
+    }
+
+    // Category
+    if (category && category.length > 0) {
+      filter.category = { $in: category };
+    }
+
+    // Sub-category
+    if (sub && sub.length > 0) {
+      filter.subs = { $in: sub };
+    }
+
+    // Shipping
+    if (shipping) {
+      filter.shipping = shipping;
+    }
+
+    // Star rating
+    if (stars) {
+      // First find matching product IDs via aggregate
+      const aggregates = await Product.aggregate([
+        {
+          $project: {
+            _id: 1,
+            floorAverage: { $floor: { $avg: "$ratings.star" } },
+          },
+        },
+        { $match: { floorAverage: stars } },
+      ]);
+      const ids = aggregates.map((a) => a._id);
+      filter._id = { $in: ids };
+    }
+
+    const products = await Product.find(filter)
       .populate("category", "_id name")
       .populate("subs", "_id name")
       .exec();
     res.json(products);
   } catch (err) {
-    console.error("Search error:", err);
+    console.error("Combined filter error:", err);
     res.status(500).json({ error: "Server Error" });
   }
 };
 
-//filter based on price
-const handlePrice = async (req, res, price) => {
-  try {
-    let products = await Product.find({
-      price: {
-        $gte: price[0], //Greater than or equal to
-        $lte: price[1], //Less than or equal to
-      },
-    })
-      .populate("category", "_id name")
-      .populate("subs", "_id name")
-      .exec();
-
-    res.json(products);
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-//filter based on category
-const handleCategory = async (req, res, category) => {
-  try {
-    let products = await Product.find({ category })
-      .populate("category", "_id name")
-      .populate("subs", "_id name")
-      .exec();
-
-    res.json(products);
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-//filter based on rating
-const handleStar = async (req, res, stars) => {
-  try {
-    const aggregates = await Product.aggregate([
-      {
-        $project: {
-          _id: 1,
-          floorAverage: { $floor: { $avg: "$ratings.star" } },
-        },
-      },
-      { $match: { floorAverage: stars } },
-      { $limit: 12 },
-    ]);
-
-    const productIds = aggregates.map((p) => p._id);
-
-    const products = await Product.find({ _id: { $in: productIds } }) //$in->including this product id
-      .populate("category", "_id name")
-      .populate("subs", "_id name");
-    res.json(products);
-  } catch (err) {
-    console.error("STAR FILTER ERROR:", err);
-    res.status(500).json({ error: "Something went wrong" });
-  }
-};
-
-//filter based on sub category
-const handleSub = async (req, res, sub) => {
-  const products = await Product.find({ subs: sub })
-    .populate("category", "_id name")
-    .populate("subs", "_id name")
-    .exec();
-
-  res.json(products);
-};
-
-//filter based on shipping
-const handleShipping = async (req, res, shipping) => {
-  const products = await Product.find({ shipping })
-    .populate("category", "_id name")
-    .populate("subs", "_id name")
-    .exec();
-  res.json(products);
-};
-
-//Search or filter
-export const searchFilters = async (req, res) => {
-  const { query, price, category, stars, sub, shipping } = req.body;
-
-  if (query) {
-    // console.log(query);
-    await handleQuery(req, res, query);
-  }
-  if (price !== undefined) {
-    // console.log(price);
-    await handlePrice(req, res, price);
-  }
-  if (category) {
-    // console.log("category ---> ", category);
-    await handleCategory(req, res, category);
-  }
-  if (stars) {
-    // console.log("stars ---> ", stars);
-    await handleStar(req, res, stars);
-  }
-  if (sub) {
-    // console.log("sub ---> ", sub);
-    await handleSub(req, res, sub);
-  }
-  if (shipping) {
-    // console.log("shipping ---> ", shipping);
-    await handleShipping(req, res, shipping);
-  }
-};

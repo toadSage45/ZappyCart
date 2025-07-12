@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { loggedInUser } from '../../features/user/userSlice.js';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import axios from 'axios'
 
 
@@ -25,26 +25,23 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-
-  const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-
   const user = useSelector((state) => state.user)
 
-  useEffect(() => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const location = useLocation();
 
-    if (user && user.token) {
-      navigate("/");
-    }
-
-  }, [user.token])
+  const intended = location.state?.from;
 
   const roleBasedRedirect = (res) => {
-    if (res.data.role === 'admin') {
-      navigate("/admin/dashboard");
+    if (intended) {
+      navigate(intended);
     } else {
-      navigate("/user/history");
+      if (res.data.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/user/history");
+      }
     }
   };
 
@@ -134,19 +131,19 @@ const Login = () => {
         <br />
         <div className="form-group">
           <div class="position-relative">
-          <input type= {showPassword ? "text" : "password"}
-            className='form-control'
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder='Your Password'
-          />
-          <span
-            className="position-absolute end-0 top-50 translate-middle-y me-3"
-            onClick={() => setShowPassword(!showPassword)}
-            style={{ cursor: "pointer", fontSize: "1.2rem" }}
-          >
-            {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-          </span>
+            <input type={showPassword ? "text" : "password"}
+              className='form-control'
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder='Your Password'
+            />
+            <span
+              className="position-absolute end-0 top-50 translate-middle-y me-3"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ cursor: "pointer", fontSize: "1.2rem" }}
+            >
+              {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+            </span>
           </div>
         </div>
 

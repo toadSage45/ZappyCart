@@ -17,13 +17,13 @@ const { SubMenu } = Menu;
 const Shop = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [price, setPrice] = useState([0, 0]);
+    const [price, setPrice] = useState([0, 100000]);
     const [ok, setOk] = useState(false);
     const [categories, setCategories] = useState([]);
     const [categoryIds, setCategoryIds] = useState([]);
     const [star, setStar] = useState("");
     const [subs, setSubs] = useState([]);
-    const [sub, setSub] = useState("");
+    const [subIds, setSubIds] = useState([]);
     const [shipping, setShipping] = useState("");
 
     const dispatch = useDispatch();
@@ -55,35 +55,34 @@ const Shop = () => {
         }
     };
 
+    // helper to apply all filters together
+    const applyFilters = () => {
+        fetchProducts({
+            price,
+            category: categoryIds,
+            stars: star,
+            sub: subIds,
+            shipping,
+            query: text,
+        });
+    };
+
     // ======================== Text Filter ========================
     useEffect(() => {
         const delayed = setTimeout(() => {
-            if (text) {
-                fetchProducts({ query: text });
-                setCategoryIds([]);
-                setPrice([0, 0]);
-                setStar("")
-                setPrice([0, 0]);
-                setShipping("");
-
-            } else {
-                loadAllProducts();
-            }
+            applyFilters();
         }, 300);
         return () => clearTimeout(delayed);
     }, [text]);
 
     // ======================== Price Filter ========================
     useEffect(() => {
-        fetchProducts({ price });
+        applyFilters();
     }, [ok]);
 
     const handleSlider = (value) => {
         dispatch(searchQuery({ text: "" }));
-        setCategoryIds([]);
-        setStar("")
-        setShipping("");
-        setPrice(value)
+        setPrice(value);
         setTimeout(() => {
             setOk(!ok);
         }, 300);
@@ -108,10 +107,6 @@ const Shop = () => {
 
     const handleCheck = (e) => {
         dispatch(searchQuery({ text: "" }));
-        setPrice([0, 0]);
-        setStar("")
-        setPrice([0, 0]);
-        setShipping("");
         let inTheState = [...categoryIds];
         let justChecked = e.target.value;
         let foundInTheState = inTheState.indexOf(justChecked);
@@ -121,19 +116,22 @@ const Shop = () => {
             inTheState.splice(foundInTheState, 1);
         }
         setCategoryIds(inTheState);
-        fetchProducts({ category: inTheState });
     };
+
+    useEffect(() => {
+        applyFilters();
+    }, [categoryIds]);
 
     // ======================== Star Filter ========================
     const handleStarClick = (num) => {
         // console.log(num)
         dispatch(searchQuery({ text: "" }));
-        setCategoryIds([]);
-        setPrice([0, 0]);
-        setPrice([0, 0]);
-        setShipping("");;
-        fetchProducts({ stars: num });
+        setStar((prev) => (prev === num ? "" : num));
     };
+
+    useEffect(() => {
+        applyFilters();
+    }, [star]);
 
     const showStars = () => (
         <div className="pr-4 pl-4 pb-2">
@@ -148,23 +146,31 @@ const Shop = () => {
         subs.map((s) => (
             <div
                 key={s._id}
-                onClick={() => handleSub(s)}
-                className="badge m-1  text-dark text-decoration-none"
+                onClick={() => handleSub(s._id)}
+                className={`badge m-1 text-dark text-decoration-none ${subIds.includes(s._id) ? "bg-secondary text-white" : "bg-light"
+                    }`}
                 style={{ cursor: "pointer" }}
             >
                 {s.name}
             </div>
         ));
 
-    const handleSub = (sub) => {
-        // console.log("SUB", sub);
+    const handleSub = (subId) => {
         dispatch(searchQuery({ text: "" }));
-        setPrice([0, 0]);
-        setCategoryIds([]);
-        setStar("");
-        setSub(sub);
-        fetchProducts({ sub });
+        let inTheState = [...subIds];
+        let justClicked = subId;
+        let foundInTheState = inTheState.indexOf(justClicked);
+        if (foundInTheState === -1) {
+            inTheState.push(justClicked);
+        } else {
+            inTheState.splice(foundInTheState, 1);
+        }
+        setSubIds(inTheState);
     };
+
+    useEffect(() => {
+        applyFilters();
+    }, [subIds]);
 
     // ======================== Shipping Filter ========================
     const showShipping = () => (
@@ -188,16 +194,15 @@ const Shop = () => {
             </Checkbox>
         </>
     );
+
     const handleShippingchange = (e) => {
-        setSub("");
         dispatch(searchQuery({ text: "" }));
-        setPrice([0, 0]);
-        setCategoryIds([]);
-        setStar("");
         setShipping(e.target.value);
-        fetchProducts({ shipping: e.target.value });
     };
 
+    useEffect(() => {
+        if (shipping) applyFilters();
+    }, [shipping]);
 
     return (
         <div className="container-fluid">
@@ -208,12 +213,8 @@ const Shop = () => {
                     <hr />
 
                     <Menu defaultOpenKeys={["1"]} mode="inline">
-
                         {/* Price */}
-                        <SubMenu
-                            key="1"
-                            title={<span className="h6">₹ Price</span>}
-                        >
+                        <SubMenu key="1" title={<span className="h6">₹ Price</span>}>
                             <div>
                                 <Slider
                                     className="mx-3"
@@ -259,7 +260,7 @@ const Shop = () => {
                                 </span>
                             }
                         >
-                            <div style={{ maringTop: "-10px" }} className="pl-4 pr-4">
+                            <div style={{ marginTop: "-10px" }} className="pl-4 pr-4">
                                 {showSubs()}
                             </div>
                         </SubMenu>
@@ -273,11 +274,10 @@ const Shop = () => {
                                 </span>
                             }
                         >
-                            <div style={{ maringTop: "-10px" }} className="pr-5">
+                            <div style={{ marginTop: "-10px" }} className="pr-5">
                                 {showShipping()}
                             </div>
                         </SubMenu>
-
                     </Menu>
                 </div>
 

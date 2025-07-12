@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { StarOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
-const RatingModal = ({ children }) => {
+const RatingModal = ({ children, slug }) => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const [modalVisible, setModalVisible] = useState(false);
@@ -14,8 +14,9 @@ const RatingModal = ({ children }) => {
         if (user && user.token) {
             setModalVisible(true);
         } else {
-            toast.error("Please login to leave a rating.");
-            navigate('/login');
+            navigate("/login", {
+                state: { from: `/product/${slug}` },  
+            });
         }
     };
 
@@ -29,7 +30,7 @@ const RatingModal = ({ children }) => {
             <div onClick={handleModalOpen} style={{ cursor: "pointer" }}>
                 <StarOutlined className="text-danger" />
                 <br />
-                {user ? "Leave rating" : "Login to leave rating"}
+                {user && user.token ? "Leave rating" : "Login to leave rating"}
             </div>
 
             <Modal

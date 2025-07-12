@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Tabs } from "antd";
+import { Card, Tabs, Tooltip } from "antd";
 import { Link } from "react-router-dom";
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Carousel } from "react-responsive-carousel";
@@ -9,6 +9,11 @@ import ProductListItems from "./ProductListItems";
 import { Rating } from "react-simple-star-rating";
 import RatingModal from "../modal/RatingModal";
 import { showAverage } from "../../functions/rating";
+import { useSelector, useDispatch } from "react-redux";
+import { setCart } from '../../features/cart/cartSlice';
+import { setVisibility } from "../../features/drawer/drawerSlice";
+import _ from "lodash";
+
 
 const { TabPane } = Tabs;
 const { Meta } = Card;
@@ -16,6 +21,44 @@ const { Meta } = Card;
 const SingleProduct = ({ product, onStarClick, star }) => {
   const { title, description, images, slug, _id } = product;
   const [rating, setRating] = useState(0);
+  const [tooltip, setTooltip] = useState("Click to add");
+
+  //redux
+  const user = useSelector((state) => state.user.user);
+  const cart = useSelector((state) => state.cart.cart);
+  const visibility = useSelector((state) => state.drawer.visibility);
+
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+    // create cart array
+    let cart = [];
+    if (typeof window !== "undefined") {
+      // if cart is in local storage GET it
+      if (localStorage.getItem("cart")) {
+        cart = JSON.parse(localStorage.getItem("cart"));
+      }
+      // push new product to cart
+      cart.push({
+        ...product,
+        count: 1,
+      });
+      // remove duplicates
+      let unique = _.uniqWith(cart, _.isEqual);
+      // save to local storage
+      // console.log('unique', unique)
+      localStorage.setItem("cart", JSON.stringify(unique));
+      // show tooltip
+      setTooltip("Added");
+
+      // add to redux state
+      dispatch(setCart(unique));
+      dispatch(setVisibility({
+        visibility: true
+      }))
+
+    }
+  };
 
   return (
     <>
@@ -48,15 +91,17 @@ const SingleProduct = ({ product, onStarClick, star }) => {
 
         <Card
           actions={[
-            <div key="cart">
-              <ShoppingCartOutlined className="text-success" /> <br />
-              Add to Cart
-            </div>,
+            <Tooltip title={tooltip}>
+              <a onClick={handleAddToCart}>
+                <ShoppingCartOutlined className="text-danger" /> <br /> Add to
+                Cart
+              </a>
+            </Tooltip>,
             <Link key="wishlist" to="/">
               <HeartOutlined className="text-info" /> <br /> Add to Wishlist
             </Link>,
 
-            <RatingModal>
+            <RatingModal slug={slug}>
               <Rating
                 onClick={(newRating) => onStarClick(newRating, _id)}
                 initialValue={star}

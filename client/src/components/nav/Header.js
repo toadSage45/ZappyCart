@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { Menu } from "antd";
+import { Menu, Badge } from "antd";
 import {
   HomeOutlined,
   LoginOutlined,
   UserAddOutlined,
   UserOutlined,
   LogoutOutlined,
-  ShopOutlined
+  ShopOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
@@ -15,11 +16,14 @@ import { auth } from "../../firebase";
 import { logout } from "../../features/user/userSlice";
 import Search from "../forms/Search";
 
+const { SubMenu } = Menu;
+
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
   const { email, token, role } = useSelector((state) => state.user);
+  const { cart } = useSelector((state) => state.cart);  
 
   const handleClick = (e) => {
     setCurrent(e.key);
@@ -42,6 +46,17 @@ const Header = () => {
       key: "shop",
       icon: <ShopOutlined />,
     },
+    {
+      label: (
+        <Link to="/cart">
+          <Badge count={cart?.length || 0} offset={[9, 0]}>
+            Cart
+          </Badge>
+        </Link>
+      ),
+      key: "cart",
+      icon: <ShoppingCartOutlined />,
+    },
     !email && {
       label: <Link to="/register">Register</Link>,
       key: "register",
@@ -52,7 +67,7 @@ const Header = () => {
       key: "login",
       icon: <LoginOutlined />,
     },
-  ].filter(Boolean);
+  ].filter(Boolean); // to remove falsy values like 'false' when user is logged in
 
   const userMenuItem = email && {
     label: email.split("@")[0],
@@ -73,12 +88,11 @@ const Header = () => {
         icon: <LogoutOutlined />,
         onClick: logoutUser,
       },
-    ],
+    ].filter(Boolean),
   };
 
   return (
     <div className="d-flex justify-content-between align-items-center px-3">
- 
       <Menu
         onClick={handleClick}
         selectedKeys={[current]}
@@ -87,12 +101,10 @@ const Header = () => {
         style={{ flex: 1 }}
       />
 
-      
       <div style={{ paddingLeft: "1rem" }}>
         <Search />
       </div>
 
-      
       {email && (
         <Menu
           mode="horizontal"
