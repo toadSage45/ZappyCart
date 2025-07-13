@@ -33,7 +33,7 @@ const Cart = () => {
                 if (res.data.ok) navigate("/user/checkout");
             })
             .catch((err) => console.log("cart save err", err));
-        
+
     };
 
     const handleRemove = (productId) => {
@@ -44,25 +44,36 @@ const Cart = () => {
     };
 
     const showCartItems = () => (
-        <table className="table table-bordered text-center align-middle">
-            <thead className="table-light">
-                <tr>
-                    <th scope="col">Image</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Color</th>
-                    <th scope="col">Count</th>
-                    <th scope="col">Shipping</th>
-                    <th scope="col">Remove</th>
-                </tr>
-            </thead>
-            <tbody>
-                {cart.map((p) => (
-                    <ProductCardInCheckout key={p._id} p={p} handleRemove={handleRemove} />
-                ))}
-            </tbody>
-        </table>
+        <div className="table-responsive">
+            <table className="table table-hover align-middle text-center border">
+                <thead className="table-light">
+                    <tr className="align-middle text-uppercase fw-semibold">
+                        <th scope="col">🖼️ Image</th>
+                        <th scope="col">📦 Title</th>
+                        <th scope="col">💰 Price</th>
+                        <th scope="col">🎨 Color</th>
+                        <th scope="col">🔢 Quantity</th>
+                        <th scope="col">🚚 Shipping</th>
+                        <th scope="col">❌ Remove</th>
+                    </tr>
+                </thead>
+                <tbody className="table-group-divider">
+                    {cart.length > 0 ? (
+                        cart.map((p) => (
+                            <ProductCardInCheckout key={p._id} p={p} handleRemove={handleRemove} />
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="7" className="text-muted py-4">
+                                Your cart is empty.
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
     );
+
 
 
     return (
@@ -103,8 +114,7 @@ const Cart = () => {
                                     >
                                         <span>{item.title}</span>
                                         <span>
-                                            {item.count} × ₹{item.price} = ₹
-                                            {item.count * item.price}
+                                            {item.count} × ₹{item.price}  
                                         </span>
                                     </div>
                                 ))

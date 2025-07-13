@@ -28,7 +28,7 @@ export const adminCheck = async (req, res ,next ) => {
 
   if(adminUser.role !== "admin"){
     res.status(403).json({
-      err : "Bakchodi nhi laude , admin ka kaam hai"
+      err : "Admin access only"
     });
   } else{
     next();

@@ -41,6 +41,7 @@ import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
 import SideDrawer from "./components/drawer/SideDrawer.js";
 import Checkout from "./pages/Checkout";
+import CreateCoupon from "./pages/admin/coupon/CreateCoupon.js";
 
 
 
@@ -103,6 +104,7 @@ function App() {
       <Route path="/admin/product" element={<AdminRoute>  <ProductCreate />  </AdminRoute>} />
       <Route path="/admin/products" element={<AdminRoute>  <AllProduct />  </AdminRoute>} />
       <Route path="/admin/product/:slug" element={<AdminRoute>  <ProductUpdate />  </AdminRoute>} />
+      <Route path="/admin/coupon" element={<AdminRoute>  <CreateCoupon />  </AdminRoute>} />
 
     </Routes>
   </>
