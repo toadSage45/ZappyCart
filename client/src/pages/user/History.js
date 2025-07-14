@@ -4,6 +4,8 @@ import { getUserOrders } from "../../functions/user";
 import { useSelector } from "react-redux";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import ShowPaymentInfo from "../../components/cards/ShowPaymentInfo";
+import Invoice from "../../components/order/Invoice";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const History = () => {
   const [orders, setOrders] = useState([]);
@@ -54,12 +56,26 @@ const History = () => {
     </div>
   );
 
+  const showDownloadLink = (order) => (
+    <div className="pdf-download-wrapper">
+      <PDFDownloadLink
+        document={<Invoice order={order} />}
+        fileName="invoice.pdf"
+        className="pdf-download-button"
+      >
+        {({ loading }) =>
+          loading ? "Preparing PDF..." : "📄 Download Invoice"
+        }
+      </PDFDownloadLink>
+    </div>
+  );
+  
   const showEachOrders = () =>
-    orders.map((order, i) => (
+    [...orders].reverse().map((order, i) => (
       <div key={i} className="order-card">
         <ShowPaymentInfo order={order} />
         {showOrderInTable(order)}
-        <div className="pdf-download">📄 Download PDF</div>
+        <div className="col">{showDownloadLink(order)}</div>
       </div>
     ));
 
@@ -128,17 +144,29 @@ const History = () => {
     color: #dc3545;
     font-size: 18px;
   }
-  .pdf-download {
-    margin-top: 20px;
-    text-align: right;
-    color: #007bff;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  .pdf-download:hover {
-    text-decoration: underline;
-  }
+  .pdf-download-button {
+          display: inline-block;
+          margin-top: 25px;
+          padding: 10px 18px;
+          background: linear-gradient(to right, #007bff, #0056b3);
+          color: white;
+          font-weight: 600;
+          font-size: 14px;
+          border-radius: 8px;
+          text-align: center;
+          transition: background 0.3s ease, transform 0.2s ease;
+          text-decoration: none;
+        }
+        .pdf-download-button:hover {
+          background: linear-gradient(to right, #0056b3, #003f7f);
+          transform: translateY(-2px);
+          text-decoration: none;
+        }
+          .pdf-download-wrapper {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 20px;
+        }
 `}</style>
 
 

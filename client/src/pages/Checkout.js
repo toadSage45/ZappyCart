@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch} from "react-redux";
-import {useNavigate} from "react-router-dom"
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom"
 import {
   getUserCart,
   emptyUserCart,
   saveUserAddress,
   getUserAddress,
   applyCoupon,
+  createCashOrderForUser
 } from "../functions/user";
 import { setCart } from "../features/cart/cartSlice";
 import { toast } from "react-toastify";
+import { changeCod } from "../features/cod/codSlice";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  
+
   const [address, setAddress] = useState("");
   const [addressSaved, setAddressSaved] = useState(false);
   const [coupon, setCoupon] = useState("");
@@ -24,20 +26,22 @@ const Checkout = () => {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.user);
 
-useEffect(() => {
-  getUserCart(token).then((res) => {
-    setProducts(res.data.products);
-    setTotal(res.data.cartTotal);
-  });
+  const { cod } = useSelector((state) => state.cod);
 
-  getUserAddress(token).then((res) => {
-    const addr = res.data.address || "";
-    setAddress(addr);
-    if (typeof(addr) == "string" && addr.trim().length > 0) {
-      setAddressSaved(true);
-    }
-  });
-}, [token]);
+  useEffect(() => {
+    getUserCart(token).then((res) => {
+      setProducts(res.data.products);
+      setTotal(res.data.cartTotal);
+    });
+
+    getUserAddress(token).then((res) => {
+      const addr = res.data.address || "";
+      setAddress(addr);
+      if (typeof (addr) == "string" && addr.trim().length > 0) {
+        setAddressSaved(true);
+      }
+    });
+  }, [token]);
 
 
   const emptyCart = () => {
@@ -81,7 +85,27 @@ useEffect(() => {
         toast.success("Coupon applied");
         settotalAfterDiscount(res.data);
       }
-      
+
+    });
+  };
+
+  const createCashOrder = () => {
+    createCashOrderForUser(token).then((res) => {
+      console.log("USER CASH ORDER CREATED RES ", res);
+      // empty cart form redux, local Storage, reset coupon, reset COD, redirect
+      if (res.data.ok) {
+        // empty local storage
+        if (typeof window !== "undefined") localStorage.removeItem("cart");
+        // empty redux cart
+        dispatch(setCart([]));
+        // empty redux COD
+        // mepty cart from backend
+        emptyUserCart(token);
+        // redirect
+        setTimeout(() => {
+          navigate("/user/history");
+        }, 1000);
+      }
     });
   };
 
@@ -165,13 +189,23 @@ useEffect(() => {
 
             <div className="row mt-4">
               <div className="col-6">
-                <button
-                  className="btn btn-primary w-100 rounded-pill"
-                  disabled={!products.length || !addressSaved}
-                  onClick={() => navigate("/user/payment")}
-                >
-                  ✅ Place Order
-                </button>
+                {cod ? (
+                  <button
+                    className="btn btn-primary w-100 rounded-pill"
+                    disabled={!products.length || !addressSaved}
+                    onClick={createCashOrder}
+                  >
+                    ✅ Place Order
+                  </button>
+                ) :
+                  <button
+                    className="btn btn-primary w-100 rounded-pill"
+                    disabled={!products.length || !addressSaved}
+                    onClick={() => navigate("/user/payment")}
+                  >
+                    ✅ Place Order
+                  </button>
+                }
               </div>
               <div className="col-6">
                 <button

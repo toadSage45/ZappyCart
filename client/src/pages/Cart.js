@@ -6,12 +6,13 @@ import ProductCardInCheckout from "../components/cards/ProductCardInCheckout";
 import { setCart } from "../features/cart/cartSlice";
 import { userCart } from "../functions/user";
 import { toast } from "react-toastify";
-
+import { changeCod } from "../features/cod/codSlice";
 
 const Cart = () => {
   // redux
   const user = useSelector((state) => state.user);
   const cart = useSelector((state) => state.cart.cart);
+
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ const Cart = () => {
   };
 
   const saveOrderToDb = async () => {
+    dispatch(changeCod({cod : false}));
     try {
       const res = await userCart(cart, user.token);
       if (res.data.ok) {
@@ -40,6 +42,18 @@ const Cart = () => {
       console.log("cart save err", err);
       toast.error("Error saving cart. Please try again.");
     }
+  };
+
+  const saveCashOrderToDb = () => {
+    // console.log("cart", JSON.stringify(cart, null, 4));
+    dispatch(changeCod({cod : true}));
+
+    userCart(cart, user.token)
+      .then((res) => {
+        console.log("CART POST RES", res);
+        if (res.data.ok) navigate("/user/checkout");
+      })
+      .catch((err) => console.log("cart save err", err));
   };
 
   const handleRemove = (productId) => {
@@ -91,9 +105,8 @@ const Cart = () => {
           <h4 className="mb-4">
             {cart.length === 0
               ? "🛒 No Products in Cart"
-              : `🛒 ${cart.length} Product${
-                  cart.length > 1 ? "s" : ""
-                } in Cart`}
+              : `🛒 ${cart.length} Product${cart.length > 1 ? "s" : ""
+              } in Cart`}
           </h4>
 
           {!cart.length ? (
@@ -142,13 +155,24 @@ const Cart = () => {
               <hr />
 
               {user && user.token ? (
-                <button
-                  onClick={saveOrderToDb}
-                  className="btn btn-success w-100"
-                  disabled={!cart.length}
-                >
-                  Proceed to Checkout
-                </button>
+                <>
+                  <button
+                    onClick={
+                      saveOrderToDb}
+                    className="btn btn-primary w-100"
+                    disabled={!cart.length}
+                  >
+                    Proceed to Checkout
+                  </button>
+                  <button
+                    onClick={saveCashOrderToDb}
+                    className="btn btn-success w-100 mt-2"
+                    disabled={!cart.length}
+                  >
+                    Cash on Delivery
+                  </button>
+                </>
+
               ) : (
                 <button
                   className="btn btn-primary w-100"

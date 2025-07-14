@@ -3,6 +3,7 @@ import Product from "../models/product.js";
 import Cart from "../models/cart.js";
 import Coupon from "../models/coupon.js";
 import Order from "../models/order.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const userCart = async (req, res) => {
   const { cart } = req.body;
@@ -118,10 +119,10 @@ export const getDiscount = async (req, res) => {
       return res.json({ err: "Invalid coupon" });
     }
 
-    const totalAfterDiscount = (
+    const totalAfterDiscount = Number(
       cartTotal -
       (cartTotal * valid.discount) / 100
-    ).toFixed(2);
+    );
 
     await Cart.findOneAndUpdate(
       { orderedBy: user._id },
@@ -139,7 +140,7 @@ export const getDiscount = async (req, res) => {
 export const createOrder = async (req, res) => {
   const { paymentIntent } = req.body.stripeResponse;
   const user = await User.findOne({ email: req.user.email }).exec();
-  
+
   const cart = await Cart.findOne({ orderedBy: user._id }).exec();
 
   let { products } = await Cart.findOne({ orderedBy: user._id }).exec();
@@ -154,7 +155,7 @@ export const createOrder = async (req, res) => {
   let bulkOption = products.map((item) => {
     return {
       updateOne: {
-        filter: { _id: item.product._id }, // IMPORTANT item.product
+        filter: { _id: item.product._id },
         update: { $inc: { quantity: -item.count, sold: +item.count } },
       },
     };
@@ -207,4 +208,48 @@ export const removeFromWishlist = async (req, res) => {
   ).exec();
 
   res.json({ ok: true });
+};
+
+export const createCashOrder = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email }).exec();
+    const userCart = await Cart.findOne({ orderedBy: user._id }).exec();
+
+    if (!userCart) {
+      return res.status(400).json({ error: "Cart not found" });
+    }
+
+    const finalAmount = userCart.totalAfterDiscount
+      ? Number(userCart.totalAfterDiscount) * 100
+      : userCart.cartTotal * 100;
+    const newOrder = await new Order({
+      products: userCart.products,
+      paymentIntent: {
+        id: uuidv4(),
+        amount: finalAmount,
+        currency: "inr",
+        status: "Cash On Delivery",
+        created: Date.now(),
+        payment_method_types: ["cash"],
+      },
+      orderedBy: user._id,
+    }).save();
+
+    const bulkOption = userCart.products.map((item) => ({
+      updateOne: {
+        filter: { _id: item.product._id },
+        update: { $inc: { quantity: -item.count, sold: +item.count } },
+      },
+    }));
+
+    await Product.bulkWrite(bulkOption);
+
+    // Optional: clean up cart
+    await Cart.findOneAndDelete({ orderedBy: user._id }).exec();
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("COD order error:", err);
+    res.status(500).json({ error: "Could not create COD order" });
+  }
 };
