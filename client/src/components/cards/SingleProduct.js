@@ -13,18 +13,23 @@ import { useSelector, useDispatch } from "react-redux";
 import { setCart } from '../../features/cart/cartSlice';
 import { setVisibility } from "../../features/drawer/drawerSlice";
 import _ from "lodash";
-
+import { addToWishlist } from "../../functions/user";
+import { useNavigate } from "react-router-dom";
+import {toast} from "react-toastify";
 
 const { TabPane } = Tabs;
 const { Meta } = Card;
 
 const SingleProduct = ({ product, onStarClick, star }) => {
+
+  const navigate = useNavigate();
+
   const { title, description, images, slug, _id } = product;
   const [rating, setRating] = useState(0);
   const [tooltip, setTooltip] = useState("Click to add");
 
   //redux
-  const user = useSelector((state) => state.user.user);
+  const {token} = useSelector((state) => state.user);
   const cart = useSelector((state) => state.cart.cart);
   const visibility = useSelector((state) => state.drawer.visibility);
 
@@ -60,6 +65,15 @@ const SingleProduct = ({ product, onStarClick, star }) => {
     }
   };
 
+  const handleAddToWishlist = (e) => {
+    e.preventDefault();
+    addToWishlist(product._id,token).then((res) => {
+      // console.log("ADDED TO WISHLIST", res.data);
+      toast.success("Added to wishlist");
+      navigate("/user/wishlist");
+    });
+  };
+
   return (
     <>
       <div className="col-md-7">
@@ -91,33 +105,36 @@ const SingleProduct = ({ product, onStarClick, star }) => {
 
         <Card
           actions={[
-            <Tooltip title={tooltip}>
+            <Tooltip title={tooltip} key="add-to-cart">
               <a onClick={handleAddToCart}>
-                <ShoppingCartOutlined className="text-danger" /> <br /> Add to
-                Cart
+                <ShoppingCartOutlined className="text-danger" /> <br /> Add to Cart
               </a>
             </Tooltip>,
-            <Link key="wishlist" to="/">
-              <HeartOutlined className="text-info" /> <br /> Add to Wishlist
-            </Link>,
 
-            <RatingModal slug={slug}>
-              <Rating
-                onClick={(newRating) => onStarClick(newRating, _id)}
-                initialValue={star}
-                size={25}
-                allowHover
-                transition
-                fillColor="red"
-                allowFraction
-              />
+            <span key="add-to-wishlist">
+              <a onClick={handleAddToWishlist}>
+                <HeartOutlined className="text-info" /> <br /> Add to Wishlist
+              </a>
+            </span>,
 
-            </RatingModal>,
-
+            <span key="rating">
+              <RatingModal slug={slug}>
+                <Rating
+                  onClick={(newRating) => onStarClick(newRating, _id)}
+                  initialValue={star}
+                  size={25}
+                  allowHover
+                  transition
+                  fillColor="red"
+                  allowFraction
+                />
+              </RatingModal>
+            </span>,
           ]}
         >
           <ProductListItems product={product} />
         </Card>
+
       </div>
     </>
   );

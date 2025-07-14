@@ -15,6 +15,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import { logout } from "../../features/user/userSlice";
 import Search from "../forms/Search";
+import {setCart} from "../../features/cart/cartSlice.js"
 
 const { SubMenu } = Menu;
 
@@ -33,6 +34,7 @@ const Header = () => {
     signOut(auth);
     dispatch(logout());
     navigate("/login");
+    // dispatch(setCart([]));
   };
 
   const mainMenuItems = [

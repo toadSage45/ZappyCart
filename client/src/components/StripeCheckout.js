@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { createPaymentIntent } from "../functions/stripe";
 import { useNavigate } from "react-router-dom";
+import { createOrder, emptyUserCart } from "../functions/user";
+import { setCart } from "../features/cart/cartSlice";
 
 const StripeCheckout = () => {
+  const dispatch = useDispatch();
   const { token } = useSelector((state) => state.user);
   const [succeeded, setSucceeded] = useState(false);
   const [error, setError] = useState(null);
@@ -39,6 +42,16 @@ const StripeCheckout = () => {
       // get result after successful payment
       // create order and save in database for admin to process
       // empty user cart from redux store and local storage
+      createOrder(payload.paymentIntent, token).then((res) => {
+        if (res.data.ok) {
+          // empty cart from local storage
+          if (typeof window !== "undefined") localStorage.removeItem("cart");
+          // empty cart from redux
+          dispatch(setCart([]));
+          // empty cart from database
+          emptyUserCart(token);
+        }
+      });
       setError(null);
       setProcessing(false);
       setSucceeded(true);

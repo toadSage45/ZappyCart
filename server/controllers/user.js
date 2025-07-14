@@ -2,6 +2,7 @@ import User from "../models/user.js";
 import Product from "../models/product.js";
 import Cart from "../models/cart.js";
 import Coupon from "../models/coupon.js";
+import Order from "../models/order.js";
 
 export const userCart = async (req, res) => {
   const { cart } = req.body;
@@ -136,30 +137,74 @@ export const getDiscount = async (req, res) => {
 };
 
 export const createOrder = async (req, res) => {
-  // console.log(req.body);
-  // return;
-  // const { paymentIntent } = req.body.stripeResponse;
-  const cart = await Cart.findOne({ orderedBy: user._id }).exec();
-
-  const paymentIntent = {
-    id: "fake_payment_id_123",
-    amount: cart.cartTotal * 100,
-    currency: "INR",
-    status: "succeeded",
-    created: Date.now(),
-    payment_method_types: ["card"],
-  };
-
+  const { paymentIntent } = req.body.stripeResponse;
   const user = await User.findOne({ email: req.user.email }).exec();
+  
+  const cart = await Cart.findOne({ orderedBy: user._id }).exec();
 
   let { products } = await Cart.findOne({ orderedBy: user._id }).exec();
 
   let newOrder = await new Order({
     products,
     paymentIntent,
-    orderdBy: user._id,
+    orderedBy: user._id,
   }).save();
 
+  // decrement quantity, increment sold
+  let bulkOption = products.map((item) => {
+    return {
+      updateOne: {
+        filter: { _id: item.product._id }, // IMPORTANT item.product
+        update: { $inc: { quantity: -item.count, sold: +item.count } },
+      },
+    };
+  });
+
+  let updated = await Product.bulkWrite(bulkOption, {});
+  console.log("PRODUCT QUANTITY-- AND SOLD++", updated);
+
   console.log("NEW ORDER SAVED", newOrder);
+  res.json({ ok: true });
+};
+
+export const orders = async (req, res) => {
+  let user = await User.findOne({ email: req.user.email }).exec();
+
+  let userOrders = await Order.find({ orderedBy: user._id })
+    .populate("products.product")
+    .exec();
+
+  res.json(userOrders);
+};
+
+
+// addToWishlist wishlist removeFromWishlist
+export const addToWishlist = async (req, res) => {
+  const { productId } = req.body;
+
+  const user = await User.findOneAndUpdate(
+    { email: req.user.email },
+    { $push: { wishlist: productId } }
+  ).exec();
+
+  res.json({ ok: true });
+};
+
+export const wishlist = async (req, res) => {
+  const list = await User.findOne({ email: req.user.email })
+    .select("wishlist")
+    .populate("wishlist")
+    .exec();
+
+  res.json(list);
+};
+
+export const removeFromWishlist = async (req, res) => {
+  const { productId } = req.params;
+  const user = await User.findOneAndUpdate(
+    { email: req.user.email },
+    { $pull: { wishlist: productId } }
+  ).exec();
+
   res.json({ ok: true });
 };
