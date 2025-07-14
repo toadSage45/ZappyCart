@@ -42,6 +42,7 @@ import Cart from "./pages/Cart";
 import SideDrawer from "./components/drawer/SideDrawer.js";
 import Checkout from "./pages/Checkout";
 import CreateCoupon from "./pages/admin/coupon/CreateCoupon.js";
+import Payment from "./pages/Payment.js";
 
 
 
@@ -95,6 +96,7 @@ function App() {
       <Route path="/user/password" element={<UserRoute>  <Password />  </UserRoute>} />
       <Route path="/user/wishlist" element={<UserRoute>  <Wishlist />  </UserRoute>} />
       <Route path="/user/checkout" element={<UserRoute>  <Checkout />  </UserRoute>} />
+      <Route path="/user/payment" element={<UserRoute>  <Payment />  </UserRoute>} />
       <Route path="/admin/dashboard" element={<AdminRoute>  <AdminDashboard />  </AdminRoute>} />
       <Route path="/admin/category" element={<AdminRoute>  <CategoryCreate />  </AdminRoute>} />
       <Route path="/admin/category/:slug" element={<AdminRoute>  <CategoryUpdate />  </AdminRoute>} />
